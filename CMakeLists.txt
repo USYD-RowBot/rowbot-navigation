@@ -119,6 +119,10 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+add_executable(odom scripts/odom.cpp)
+target_link_libraries(odom ${catkin_LIBRARIES})
+
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/rowbot_navigation.cpp
