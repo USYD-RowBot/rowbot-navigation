@@ -2,7 +2,7 @@
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
-
+#include <geometry_msgs/Vector3Stamped.h>
 class Odom{
 public:
 
@@ -23,6 +23,10 @@ public:
     vy = 0;
     vth = msg->angular.z *k2;
   }
+
+  void callback(const geometry_msgs::Vector3Stamped::ConstPtr& msg){
+    
+  }
 };
 
 
@@ -31,7 +35,7 @@ int main(int argc, char** argv){
   ros::init(argc, argv, "odometry_publisher");
 
   ros::NodeHandle n;
-  ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
+  ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("rowbot/odom/motor", 50);
   tf::TransformBroadcaster odom_broadcaster;
 
   Odom a;
@@ -57,17 +61,21 @@ int main(int argc, char** argv){
   while(n.ok()){
 
     ros::spinOnce();               // check for incoming messages
-    ax = a.vx;
+    double k = 1.5;
+    if (ax>0){ax = a.vx*k;}
+    else{ax = a.vx*0.9;}
+
     ay = a.vy;
-    ath = a.vth;
+    ath = a.vth*1;
     current_time = ros::Time::now();
 
     //compute odometry in a typical way given the velocities of the robot
     double dt = (current_time - last_time).toSec();
-    double k = 0.01;
+    double k1 = 0.005;
     double k2 = 0.005;
-    double delta_vx = (ax * cos(th) - ay * sin(th)) * dt -vx*k;
-    double delta_vy = (ax * sin(th) + ay * cos(th)) * dt -vy*k;
+
+    double delta_vx = (ax * cos(th) - ay * sin(th)) * dt -vx*k1;
+    double delta_vy = (ax * sin(th) + ay * cos(th)) * dt -vy*k1;
     double delta_vth = ath * dt -vth*k2;
     vx += delta_vx;
     vy += delta_vy;
@@ -88,7 +96,7 @@ int main(int argc, char** argv){
     geometry_msgs::TransformStamped odom_trans;
     odom_trans.header.stamp = current_time;
     odom_trans.header.frame_id = "odom";
-    odom_trans.child_frame_id = "base_link";
+    odom_trans.child_frame_id = "base_footprint";
 
     odom_trans.transform.translation.x = x;
     odom_trans.transform.translation.y = y;
@@ -96,7 +104,7 @@ int main(int argc, char** argv){
     odom_trans.transform.rotation = odom_quat;
 
     //send the transform
-    odom_broadcaster.sendTransform(odom_trans);
+    //odom_broadcaster.sendTransform(odom_trans);
 
     //next, we'll publish the odometry message over ROS
     nav_msgs::Odometry odom;
@@ -110,17 +118,17 @@ int main(int argc, char** argv){
     odom.pose.pose.orientation = odom_quat;
 
     //set the velocity
-    odom.child_frame_id = "base_link";
+    odom.child_frame_id = "base_footprint";
     odom.twist.twist.linear.x = vx;
     odom.twist.twist.linear.y = vy;
     odom.twist.twist.angular.z = vth;
 
-    odom.pose.covariance[0] = 1000;
-    odom.pose.covariance[7] = 1000;
-    odom.pose.covariance[14] = 1000;
-    odom.pose.covariance[21] = 1000;
-    odom.pose.covariance[28] = 1000;
-    odom.pose.covariance[35] = 1000;
+    odom.pose.covariance[0] = 0.01;
+    odom.pose.covariance[7] = 0.01;
+    odom.pose.covariance[14] = 0.01;
+    odom.pose.covariance[21] = 0.01;
+    odom.pose.covariance[28] = 0.01;
+    odom.pose.covariance[35] = 0.01;
     //publish the message
     odom_pub.publish(odom);
 
