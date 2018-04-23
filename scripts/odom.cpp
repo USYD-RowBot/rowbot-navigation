@@ -24,9 +24,6 @@ public:
     vth = msg->angular.z *k2;
   }
 
-  void callback(const geometry_msgs::Vector3Stamped::ConstPtr& msg){
-    
-  }
 };
 
 
