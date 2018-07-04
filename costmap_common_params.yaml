@@ -1,0 +1,19 @@
+plugins:
+  - {name: static_map, type: "costmap_2d::StaticLayer"}
+  - {name: obstacles, type: "costmap_2d::VoxelLayer"}
+  - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+
+obstacle_range: 10
+raytrace_range: 15
+footprint: [[-2, -2], [2, -2], [2, 2], [-2,2]]
+#robot_radius: ir_of_robot
+#inflation_radius: 2.0
+#cost_scaling_factor: 10
+obstacles:
+  observation_sources: scan
+
+  scan: {sensor_frame: velodyne, data_type: LaserScan, topic: ["/rowbot/scan"], marking: true, clearing: true}
+
+inflation_layer:
+   inflation_radius: 3
+   enabled: true
