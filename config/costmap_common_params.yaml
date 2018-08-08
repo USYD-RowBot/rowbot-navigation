@@ -5,9 +5,9 @@ plugins:
 
 obstacle_range: 10
 raytrace_range: 15
-footprint: [[-2, -2], [2, -2], [2, 2], [-2,2]]
+footprint: [[-2.5, -1.5], [2.5, -1.5], [2.5, 1.5], [-2.5,1.5]]
 #robot_radius: ir_of_robot
-#inflation_radius: 2.0
+#inflation_radius: 10.0
 #cost_scaling_factor: 10
 obstacles:
   observation_sources: scan
@@ -15,5 +15,6 @@ obstacles:
   scan: {sensor_frame: velodyne, data_type: LaserScan, topic: ["/rowbot/scan"], marking: true, clearing: true}
 
 inflation_layer:
-   inflation_radius: 3
-   enabled: true
+  inflation_radius: 4
+  cost_scaling_factor: 1
+  enabled: true
