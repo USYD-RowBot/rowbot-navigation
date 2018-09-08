@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-  <node pkg="asr_move_base" type="move_base" respawn="true" name="move_base" output="screen">
+  <node pkg="move_base" type="move_base" respawn="true" name="move_base" output="screen">
     <remap from="odom" to="rowbot/odometry/filtered" />
     <remap from="scan" to="rowbot/scan" />
 		<rosparam file="$(find rowbot_navigation)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
