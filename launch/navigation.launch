@@ -3,48 +3,32 @@
 <launch>
   <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
 	<rosparam command="load" file="$(find rowbot_navigation)/config/ekf.yaml" />
-	<remap from="odometry/filtered" to="/rowbot/odometry/filtered"/>
-	<remap from="accel/filtered" to="/rowbot/accel/filtered"/>
+	<remap from="odometry/filtered" to="odometry/filtered"/>
+	<remap from="accel/filtered" to="accel/filtered"/>
   </node>
 
   <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" respawn="true">
     <param name="magnetic_declination_radians" value="0"/>
-    <remap from="/imu/data" to="/rowbot/imu/data" />
-    <remap from="/gps/fix" to="/rowbot/gps/fix" />
-    <remap from="/odometry/filtered" to="/rowbot/odometry/filtered" />
-    <remap from="/odometry/gps" to="/rowbot/odometry/gps" />
+    <remap from="/imu/data" to="/imu/data" />
+    <remap from="/gps/fix" to="/gps/fix" />
+    <remap from="/odometry/filtered" to="odometry/filtered" />
+    <remap from="/odometry/gps" to="/odometry/gps" />
   </node>
 
   <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
-		<remap from="cloud_in" to="rowbot/velodyne_points"/>
-		<remap from="scan" to="rowbot/scan"/>
-		<rosparam>min_height: -10
+		<remap from="cloud_in" to="lidar_wamv/points"/>
+		<remap from="scan" to="/scan"/>
+		<rosparam>min_height: -1.5
 angle_increment: 0.00872664625
 range_max: 100.0
+range_min: 2.5
 angle_min: -3.1415
 angle_max: 3.1415
 use_inf: false </rosparam>
 	</node>
 
-	<node pkg="gmapping" type="slam_gmapping" name="gmapping_thing" output="screen" >
-		<remap from="scan" to="rowbot/scan" />
-		<param name="odom_frame" value="odom" />
-		<param name="base_frame" value="base_link" />
-    <param name="map_frame" value="map" />
-		<param name="map_update_interval" value="0.5" />
-    <param name="maxUrange" value="80" />
+	<node pkg="rowbot_navigation" type="mapping" name="mapping" output="screen" >
+		<remap from="scan" to="/scan" />
 
-		<param name="iterations" value="5" />
-		<param name="minimumScore" value="600" />
-		<param name="particles" value="1" />
-		<param name="str" value="0" />
-		<param name="srr" value="0" />
-		<param name="srt" value="0" />
-		<param name="stt" value="0" />
-		<param name="linearUpdate" value="0.25" />
-		<param name="angularUpdate" value="0.25" />
-		<param name="temporalUpdate" value="0.25" />
-		<param name="delta" value="0.25" />
-    <param name="maxUrange" value="100" />
 	</node>
 </launch>

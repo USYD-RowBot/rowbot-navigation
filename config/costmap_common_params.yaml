@@ -12,7 +12,7 @@ footprint: [[-2.5, -1.5], [2.5, -1.5], [2.5, 1.5], [-2.5,1.5]]
 obstacles:
   observation_sources: scan
 
-  scan: {sensor_frame: velodyne, data_type: LaserScan, topic: ["/rowbot/scan"], marking: true, clearing: true}
+  scan: {sensor_frame: lidar_wamv_link, data_type: LaserScan, topic: ["/scan"], marking: true, clearing: true}
 
 inflation_layer:
   inflation_radius: 4

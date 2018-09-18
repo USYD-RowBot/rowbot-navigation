@@ -153,6 +153,12 @@ target_link_libraries(odom ${catkin_LIBRARIES})
 #   ${catkin_LIBRARIES}
 # )
 
+add_executable(${PROJECT_NAME}_mapping src/mapping.cpp)
+set_target_properties(${PROJECT_NAME}_mapping PROPERTIES OUTPUT_NAME mapping PREFIX "")
+target_link_libraries(${PROJECT_NAME}_mapping
+	${catkin_LIBRARIES}
+)
+
 #############
 ## Install ##
 #############

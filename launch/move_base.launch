@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <launch>
   <node pkg="move_base" type="move_base" respawn="true" name="move_base" output="screen">
-    <remap from="odom" to="rowbot/odometry/filtered" />
-    <remap from="scan" to="rowbot/scan" />
+    <remap from="odom" to="odometry/filtered" />
+    <remap from="scan" to="scan" />
 		<rosparam file="$(find rowbot_navigation)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
 		<rosparam file="$(find rowbot_navigation)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find rowbot_navigation)/config/move_base_params.yaml" command="load" />
@@ -12,4 +12,9 @@
 		<rosparam file="$(find rowbot_navigation)/config/base_local_planner_params.yaml" command="load" />
     <rosparam file="$(find rowbot_navigation)/config/global_planner_params.yaml" command="load" />
 	</node>
+
+  <node pkg = "rowbot_navigation" type = "motor_controller.py" name="motor_controller">
+    <remap from="left_cmd" to="left_thrust_cmd"/>
+    <remap from="right_cmd" to="right_thrust_cmd"/>
+  </node>
 </launch>

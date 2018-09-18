@@ -4,22 +4,22 @@
 import rospy
 import math
 from geometry_msgs.msg import Twist
-from robotx_gazebo.msg import UsvDrive
 from nav_msgs.msg import Odometry
-
+from std_msgs.msg import Float32
 
 
 class Node():
     def __init__(self):
         self.pub = None
-        self.driveMsg =UsvDrive()
+        self.left = 0
+        self.right = 0
         self.cmd_vel = Twist()
-        self.lin_kp = 1
+        self.lin_kp = 2
         self.lin_ki = 1
-        self.lin_kd = 0
-        self.ang_kp = 1
-        self.ang_ki = 1
-        self.ang_kd = 0
+        self.lin_kd = 0.1
+        self.ang_kp = 2
+        self.ang_ki = 5
+        self.ang_kd = 0.2
         self.error_lin = 0
         self.error_ang = 0
         self.error_prior_lin = 0
@@ -29,6 +29,10 @@ class Node():
         self.lin_vel = 0
         self.lin_vel_y = 0
         self.ang_vel = 0
+        self.left_pub = rospy.Publisher("left_cmd",Float32,queue_size=10)
+        self.right_pub = rospy.Publisher("right_cmd",Float32,queue_size=10)
+        self.left_msg = Float32()
+        self.right_msg = Float32()
 
     def callback(self,data):
         rospy.logdebug("RX: Twist "+rospy.get_caller_id())
@@ -72,35 +76,35 @@ class Node():
         derivative_ang = (self.error_ang - self.error_prior_ang)/dt
 
 
-        self.driveMsg.left = self.lin_kp * self.error_lin + self.lin_ki * self.integral_lin + self.lin_kd * derivative_lin - self.lin_vel_y *self.cmd_vel.linear.x* k
-        self.driveMsg.right = self.lin_kp * self.error_lin + self.lin_ki * self.integral_lin + self.lin_kd * derivative_lin + self.lin_vel_y *self.cmd_vel.linear.x* k
+        self.left = self.lin_kp * self.error_lin + self.lin_ki * self.integral_lin + self.lin_kd * derivative_lin
+        self.right = self.lin_kp * self.error_lin + self.lin_ki * self.integral_lin + self.lin_kd * derivative_lin
 
-        self.driveMsg.left = self.driveMsg.left - (self.ang_kp * self.error_ang + self.ang_ki * self.integral_ang + self.ang_kd * derivative_ang)
-        self.driveMsg.right = self.driveMsg.right + (self.ang_kp * self.error_ang + self.ang_ki * self.integral_ang + self.ang_kd * derivative_ang)
+        self.left = self.left - (self.ang_kp * self.error_ang + self.ang_ki * self.integral_ang + self.ang_kd * derivative_ang)
+        self.right = self.right + (self.ang_kp * self.error_ang + self.ang_ki * self.integral_ang + self.ang_kd * derivative_ang)
         #Publish the data
 
-        self.pub.publish(self.driveMsg)
+        self.left_msg.data = self.left
+        self.right_msg.data = self.right
+
+        self.left_pub.publish(self.left_msg)
+        self.right_pub.publish(self.right_msg)
 if __name__ == '__main__':
 
     rospy.init_node('twist2drive', anonymous=True)
 
     # ROS Parameters
     in_topic = rospy.get_param('~input_topic','cmd_vel')
-    out_topic = rospy.get_param('~output_topic','cmd_drive')
-    odom_topic = rospy.get_param('~odom_topic','odom')
+    odom_topic = rospy.get_param('~odom_topic','odometry/filtered')
 
-    rospy.loginfo("Subscribing to <%s>, Publishing to <%s>"%(in_topic,out_topic))
     node=Node()
 
     # Publisher
-    node.pub = rospy.Publisher(out_topic,UsvDrive,queue_size=10)
-    node.driveMsg = UsvDrive()
 
     # Subscriber
     rospy.Subscriber(in_topic,Twist,node.callback)
     rospy.loginfo("Subscribing to <%s>"%(odom_topic))
 
-    rospy.Subscriber("rowbot/odometry/filtered",Odometry,node.callback_odom)
+    rospy.Subscriber("odometry/filtered",Odometry,node.callback_odom)
 
     rate = rospy.Rate(20)
 
