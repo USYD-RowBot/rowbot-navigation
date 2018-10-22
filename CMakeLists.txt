@@ -10,6 +10,7 @@ project(rowbot_navigation)
 find_package(catkin REQUIRED COMPONENTS
   rospy
   tf
+  teb_local_planner
 )
 
 ## System dependencies are found with CMake's conventions
