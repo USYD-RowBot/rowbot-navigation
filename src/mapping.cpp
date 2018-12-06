@@ -17,6 +17,8 @@ private:
   nav_msgs::OccupancyGrid map;
   ros::NodeHandle node;
   geometry_msgs::TransformStamped odom_transform;
+  int width ;
+  float resolution;
 
 public:
   MappingServer(ros::NodeHandle node){
@@ -24,16 +26,19 @@ public:
     tf2_ros::TransformListener tf_listener(tf_buffer);
     this->node = node;
 
+    width = 1028;
+    resolution = 0.4;
+
     // Initalize an empty Map
-    map.info.resolution = 0.1;
-    map.info.width = 4096;
-    map.info.height = 4096;
-    map.info.origin.position.x = -204.8;
-    map.info.origin.position.y = -204.8;
+    map.info.resolution = resolution;
+    map.info.width = width;
+    map.info.height = width;
+    map.info.origin.position.x = -float(width)*resolution/2;
+    map.info.origin.position.y = -float(width)*resolution/2;
     map.info.origin.orientation.w = 1.0;
-    map.header.frame_id = "odom";
+    map.header.frame_id = "map";
     map.data.clear();
-    for(long int i = 0; i< 4096*4096; i++){
+    for(long int i = 0; i< width*width; i++){
       map.data.push_back(-1);
     }
 
@@ -115,10 +120,9 @@ public:
       //set pixel on map;
       //TODO Change originxd and y, to be defined of map origin. Right now assume its off the centre.
       //TODO Change hard values to paramer values from map info or from rosparam
-      float resolution = 0.1;
-      int origin_x = 2048; //Starting location
-      int origin_y = 2048;
-      int width = 4096;
+
+      int origin_x = width/2; //Starting location
+      int origin_y = width/2;
       int increment_value = 15; //Value to increment occupied space
       int decrement_value = 2; //Value to decrement occupied space.
 
