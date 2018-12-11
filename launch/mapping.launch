@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+		<remap from="cloud_in" to="lidar/points"/>
+		<remap from="scan" to="/scan"/>
+		<rosparam>min_height: -1.5
+angle_increment: 0.00872664625
+range_max: 100.0
+range_min: 2.5
+angle_min: -2
+angle_max: 2
+use_inf: false </rosparam>
+	</node>
+
+	<node pkg="rowbot_navigation" type="mapping" name="mapping" output="screen" >
+		<remap from="scan" to="/scan" />
+
+	</node>
+</launch>

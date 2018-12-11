@@ -12,7 +12,7 @@
   </node-->
 
   <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
-    <remap from="cloud_in" to="lidar_wamv/points"/>
+    <remap from="cloud_in" to="lidar/points"/>
     <remap from="scan" to="/scan"/>
     <rosparam>min_height: -1.5
 angle_increment: 0.00872664625
