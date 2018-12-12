@@ -12,9 +12,9 @@ def handle_odom_pose(ros_odom_msg, tf_frame_id):
     t2 = geometry_msgs.msg.TransformStamped()
     t.header.stamp = rospy.Time.now()
     t.header.frame_id = tf_frame_id
-    t.child_frame_id = "base_link"
-    t.transform.translation.x = -ros_odom_msg.pose.pose.position.x
-    t.transform.translation.y = -ros_odom_msg.pose.pose.position.y
+    t.child_frame_id = "base_link_gps"
+    t.transform.translation.x = ros_odom_msg.pose.pose.position.x
+    t.transform.translation.y = ros_odom_msg.pose.pose.position.y
     t.transform.translation.z = 0
     t.transform.rotation.x = ros_odom_msg.pose.pose.orientation.x
     t.transform.rotation.y = ros_odom_msg.pose.pose.orientation.y

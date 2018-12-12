@@ -22,7 +22,12 @@ angle_min: -2
 angle_max: 2
 use_inf: false </rosparam>
   </node>
-  <node pkg="rowbot_navigation" type="mapping" name="mapping"/>
+  <node pkg="rowbot_navigation" type="mapping" name="mapping">
+    <param name="~width" , value="1024"/>
+    <param name="~resolution" , value="0.4"/>
+    <param name="~offset_x" , value="60.0"/>
+    <param name="~offset_y" , value="180.0"/>
+  </node>
 
   <node pkg="global_planner" type="planner" name="global_planner" output="screen">
     <!--remap from="global_planner/costmap/footprint" to ="costmap_2d/costmap/footprint"/-->

@@ -19,6 +19,8 @@ private:
   geometry_msgs::TransformStamped odom_transform;
   int width ;
   float resolution;
+  float offset_x;
+  float offset_y;
 
 public:
   MappingServer(ros::NodeHandle node){
@@ -26,15 +28,22 @@ public:
     tf2_ros::TransformListener tf_listener(tf_buffer);
     this->node = node;
 
-    width = 1028;
-    resolution = 0.4;
+
+    ros::param::get("~width", width_);
+    ros::param::get("~resolution", resolution);
+    ros::param::get("~offset_x", offset_x);
+    ros::param::get("~offset_y", offset_y);
+    // width = 1024;
+    // resolution = 0.4;
+    // offset_x = 60;
+    // offset_y= 180;
 
     // Initalize an empty Map
     map.info.resolution = resolution;
     map.info.width = width;
     map.info.height = width;
-    map.info.origin.position.x = -float(width)*resolution/2;
-    map.info.origin.position.y = -float(width)*resolution/2;
+    map.info.origin.position.x = -float(width)*resolution/2 + offset_x;
+    map.info.origin.position.y = -float(width)*resolution/2 + offset_y;
     map.info.origin.orientation.w = 1.0;
     map.header.frame_id = "map";
     map.data.clear();
@@ -46,7 +55,7 @@ public:
     ROS_INFO("Waiting for odometry.");
     while(ros::ok()){
       try{
-        odom_transform = tf_buffer.lookupTransform("odom","base_link",ros::Time(0));
+        odom_transform = tf_buffer.lookupTransform("odom","lidar",ros::Time(0));
         ROS_INFO("Found odometry.");
         break;
       }
@@ -121,14 +130,14 @@ public:
       //TODO Change originxd and y, to be defined of map origin. Right now assume its off the centre.
       //TODO Change hard values to paramer values from map info or from rosparam
 
-      int origin_x = width/2; //Starting location
-      int origin_y = width/2;
+      int origin_x = width/2 - int(offset_x/resolution); //Starting location
+      int origin_y = width/2 - int(offset_y/resolution);
       int increment_value = 15; //Value to increment occupied space
       int decrement_value = 2; //Value to decrement occupied space.
 
       //Determine current location on map from odometry.
-      int odom_x = origin_x+odom_transform.transform.translation.x/resolution;
-      int odom_y = origin_y+odom_transform.transform.translation.y/resolution;
+      int odom_x = origin_x+(odom_transform.transform.translation.x)/resolution;
+      int odom_y = origin_y+(odom_transform.transform.translation.y)/resolution;
 
       //Determing detected occpued space from scan relative to current position.
       int x = int(odom_x + (range/resolution)*cos(angle));
@@ -166,14 +175,16 @@ public:
         }
       }
       else{
-        float clear_range = 30;
+        float clear_range = 20;
 
         for (int j = int(clear_range/resolution); j>0;j--){
           int x = int(odom_x + float(j)*cos(angle));
           int y = int(odom_y + float(j)*sin(angle));
           int index = y*width + x;
           if (map.data[index] > decrement_value){
-            if ((float(j)*resolution) <= 12 && (float(j)*resolution) >= 5){
+
+            //If distance is < clear range and > 5
+            if ((float(j)*resolution) <= clear_range && (float(j)*resolution) >= 5){
               map.data[index] = map.data[index]-decrement_value;
             }
           }
@@ -199,7 +210,7 @@ int main(int argc, char **argv){
   ros::Publisher map_publisher = n.advertise<nav_msgs::OccupancyGrid>("map",1000);
 
   //TODO Recieve rate from rosparam. GET VELODYNE LOCATION FROM ROS
-  int rate_hz = 20;
+  int rate_hz = 10;
   ros::Rate rate(rate_hz);
   while(ros::ok()){
     mapping_server.getOdom(&tf_buffer);
