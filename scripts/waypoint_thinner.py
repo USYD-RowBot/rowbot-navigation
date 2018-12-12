@@ -34,5 +34,5 @@ def pathCallback(path_msg):
 if __name__ == "__main__":
     rospy.init_node('paththinner')
 
-    rospy.Subscriber("global_planner/planner/plan",Path,callback)
+    rospy.Subscriber("/waypoints_full",Path,callback)
     pub = rospy.Publisher("waypoints")

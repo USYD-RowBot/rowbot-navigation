@@ -49,6 +49,9 @@ use_inf: false </rosparam>
     <param name = "costmap/static_map" value = "true"/>
     <param name = "costmap/inflation_layer/inflation_radius" value = "4"/>
     <param name = "costmap/inflation_layer/cost_scaling_factor" value = "1"/>
+    <remap from="global_planner/planner/plan" to="waypoints_full" />
+
 
   </node>
+  <node pkg"rowbot_navigation" type="waypoint_thinner.py" name="waypoint_thinner" />
 </launch>
