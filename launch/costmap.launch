@@ -21,12 +21,14 @@ range_min: 2.5
 angle_min: -2
 angle_max: 2
 use_inf: false </rosparam>
+
+
   </node>
   <node pkg="rowbot_navigation" type="mapping" name="mapping">
-    <param name="~width" , value="1024"/>
-    <param name="~resolution" , value="0.4"/>
-    <param name="~offset_x" , value="60.0"/>
-    <param name="~offset_y" , value="180.0"/>
+    <param name="~width" value="1024"/>
+    <param name="~resolution" value="0.4"/>
+    <param name="~offset_x" value="60.0"/>
+    <param name="~offset_y" value="180.0"/>
   </node>
 
   <node pkg="global_planner" type="planner" name="global_planner" output="screen">
@@ -47,11 +49,10 @@ use_inf: false </rosparam>
     <param name = "costmap/width" value = "100"/>
    <param name = "costmap/robot_radius" value = "1.5"/>
     <param name = "costmap/static_map" value = "true"/>
-    <param name = "costmap/inflation_layer/inflation_radius" value = "4"/>
+    <param name = "costmap/inflation_layer/inflation_radius" value = "2.5"/>
     <param name = "costmap/inflation_layer/cost_scaling_factor" value = "1"/>
-    <remap from="global_planner/planner/plan" to="waypoints_full" />
-
-
+    <remap from="global_planner/planner/plan" to="waypoints_full"/>
   </node>
-  <node pkg"rowbot_navigation" type="waypoint_thinner.py" name="waypoint_thinner" />
+
+  <node pkg="rowbot_navigation" type="waypoint_thinner.py" name="waypoint_thinner" />
 </launch>
