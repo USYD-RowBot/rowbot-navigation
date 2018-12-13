@@ -29,7 +29,7 @@ public:
     this->node = node;
 
 
-    ros::param::get("~width", width_);
+    ros::param::get("~width", width);
     ros::param::get("~resolution", resolution);
     ros::param::get("~offset_x", offset_x);
     ros::param::get("~offset_y", offset_y);

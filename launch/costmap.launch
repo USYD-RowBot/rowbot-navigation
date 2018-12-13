@@ -27,8 +27,8 @@ use_inf: false </rosparam>
   <node pkg="rowbot_navigation" type="mapping" name="mapping">
     <param name="~width" value="1024"/>
     <param name="~resolution" value="0.4"/>
-    <param name="~offset_x" value="60.0"/>
-    <param name="~offset_y" value="180.0"/>
+    <param name="~offset_x" value="+60.0"/>
+    <param name="~offset_y" value="-346.0"/>
   </node>
 
   <node pkg="global_planner" type="planner" name="global_planner" output="screen">
